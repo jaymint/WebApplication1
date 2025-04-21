@@ -1,0 +1,110 @@
+﻿@page
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@model CreateShipmentTruckAssignmentModel
+@{
+    ViewData["Title"] = "Assign Shipment to Truck";
+}
+
+<head>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+
+<h1 class="text-center my-4">Assign Shipment to Truck</h1>
+
+<div class="container bg-light shadow p-4 rounded">
+    <form method="post" class="row g-3">
+        <div class="col-md-6">
+            <label for="ShipmentId" class="form-label text-primary">
+                <i class="fas fa-box"></i> Select Shipment
+            </label>
+            <select id="ShipmentId" name="ShipmentTruckAssignment.ShipmentId" class="form-select" required onchange="fetchShipmentDetails()">
+                <option value="" disabled selected>Choose Shipment</option>
+                @if (Model.Shipments != null && Model.Shipments.Any())
+                {
+                    foreach (var shipment in Model.Shipments)
+                    {
+                        <option value="@shipment.Id">@shipment.SenderName To @shipment.ReceiverName</option>
+                    }
+                }
+                else
+                {
+                    <option value="" disabled>No shipments available</option>
+                }
+            </select>
+        </div>
+        <div class="col-md-6">
+            <label for="TruckId" class="form-label text-primary">
+                <i class="fas fa-truck"></i> Select Truck
+            </label>
+            <select id="TruckId" name="ShipmentTruckAssignment.TruckId" class="form-select" required>
+                <option value="" disabled selected>Choose Truck</option>
+                @if (Model.Trucks != null && Model.Trucks.Any())
+                {
+                    foreach (var truck in Model.Trucks)
+                    {
+                        <option value="@truck.Id">@truck.TruckNumber of @truck.DriverName</option>
+                    }
+                }
+                else
+                {
+                    <option value="" disabled>No trucks available</option>
+                }
+            </select>
+        </div>
+        <!-- New Assignment Date Field -->
+        <div class="col-md-6">
+            <label for="AssignmentDate" class="form-label text-primary">
+                <i class="fas fa-calendar-alt"></i> Assignment Date
+            </label>
+            <input type="date" id="AssignmentDate" name="ShipmentTruckAssignment.AssignmentDate" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")" required />
+        </div>
+        <!-- Section to display shipment details -->
+        <div class="col-12 mt-4">
+            <h5 class="text-primary">Shipment Details</h5>
+            <div id="ShipmentDetails" class="p-3 bg-white border rounded">
+                <p>Select a shipment to view details.</p>
+            </div>
+        </div>
+
+        <div class="col-12 text-center">
+            <button type="submit" class="btn btn-success btn-lg">
+                <i class="fas fa-check"></i> Assign
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+    function fetchShipmentDetails() {
+        const shipmentId = document.getElementById("ShipmentId").value;
+
+        if (shipmentId) {
+            $.ajax({
+                url: '/api/shipments/' + shipmentId, // API endpoint to fetch shipment details
+                method: 'GET',
+                success: function (data) {
+                    // Populate the ShipmentDetails section with the fetched data
+                    const details = `
+                        <p><strong>Sender Name:</strong> ${data.senderName}</p>
+                        <p><strong>Receiver Name:</strong> ${data.receiverName}</p>
+                        <p><strong>City:</strong> ${data.city}</p>
+                        <p><strong>Booking Office:</strong> ${data.bookingOffice}</p>
+                        <p><strong>Shipment Date and Time:</strong> ${data.shipmentDateTime}</p>
+                        <p><strong>Description:</strong> ${data.description}</p>
+                        <p><strong>Number of Items:</strong> ${data.numberOfItems}</p>
+                        <p><strong>Total Weight:</strong> ${data.totalWeight} kg</p>
+                        <p><strong>Price:</strong> ₹${data.price}</p>
+                        <p><strong>User:</strong> ${data.CreatedBy}</p>
+                    `;
+                    document.getElementById("ShipmentDetails").innerHTML = details;
+                },
+                error: function () {
+                    document.getElementById("ShipmentDetails").innerHTML = '<p class="text-danger">Failed to fetch shipment details.</p>';
+                }
+            });
+        }
+    }
+</script>
+

@@ -1,0 +1,221 @@
+﻿@page
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@model ShipmentsByTruckModel
+@{
+    ViewData["Title"] = "Shipments by Truck";
+}
+
+<head>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<style>
+    @@page {
+        margin: 0.5cm;
+    }
+
+    @@media print {
+        /* Hide everything by default */
+        body * {
+            visibility: hidden;
+        }
+
+        /* Show only the print-section */
+        .print-section, .print-section * {
+            visibility: visible;
+        }
+
+        /* Hide the print button */
+        .no-print {
+            display: none !important;
+        }
+
+        /* Ensure the print-section is positioned correctly */
+        .print-section {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+        }
+
+        /* Style the header and logo */
+        .print-section img {
+            display: block;
+            margin: 0 auto;
+            max-width: 150px;
+        }
+
+        .print-section h1, .print-section h2 {
+            text-align: center;
+            margin: 10px 0;
+        }
+
+        .print-section table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .print-section th, .print-section td {
+            border: 1px solid #000;
+            padding: 8px;
+            text-align: left;
+        }
+
+        .print-section th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+
+        /* Style the footer */
+        .print-section footer {
+            margin-top: 20px;
+            font-size: 14px;
+            text-align: center;
+            border-top: 1px solid #000;
+            padding-top: 10px;
+        }
+
+        /* Add page numbers */
+        @@page {
+            counter-increment: page;
+        }
+
+        body::after {
+            content: "Page " counter(page);
+            position: fixed;
+            bottom: 0;
+            right: 0;
+            font-size: 12px;
+        }
+    }
+</style>
+
+
+
+
+
+
+
+</head>
+<script>
+    function printTable() {
+        console.log("printTable function called.");
+
+        // Select the print section
+        const printSection = document.querySelector('.print-section');
+        if (!printSection) {
+            console.error("Print section not found.");
+            return;
+        }
+
+        // Save the current page content
+        const originalContent = document.body.innerHTML;
+
+        // Replace the body content with the print section
+        document.body.innerHTML = printSection.outerHTML;
+
+        // Trigger the print dialog
+        window.print();
+
+        // Restore the original page content
+        document.body.innerHTML = originalContent;
+
+        // Reload the scripts and styles
+        window.location.reload();
+    }
+</script>
+
+
+<h1 class="text-center my-4">View Shipments by Truck</h1>
+
+<div class="container bg-light shadow p-4 rounded">
+    <!-- Back Button -->
+    <div class="mb-3">
+        <a asp-page="/Index" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Back to Home
+        </a>
+    </div>
+
+    <form method="get" class="row g-3">
+        <div class="col-md-6">
+            <label for="TruckId" class="form-label">Select Truck</label>
+            <select id="TruckId" name="TruckId" class="form-select" required>
+                <option value="" disabled selected>Choose Truck</option>
+                @foreach (var truck in Model.Trucks)
+                {
+                    <option value="@truck.Id">@truck.TruckNumber - @truck.DriverName</option>
+                }
+            </select>
+        </div>
+        <div class="col-md-6 d-flex align-items-end">
+            <button type="submit" class="btn btn-primary">View Shipments</button>
+        </div>
+    </form>
+
+    @if (Model.Shipments != null && Model.Shipments.Any())
+    {
+        <div class="d-flex justify-content-between align-items-center mt-4">
+            <h3>Shipments for Truck: @Model.SelectedTruckNumber</h3>
+            <button class="btn btn-secondary" onclick="printTable()">Print</button>
+        </div>
+        <div class="print-section mt-4">
+            <div class="text-center mb-4">
+                <img src="/images/logo.png" alt="Company Logo" style="max-width: 150px; margin-bottom: 10px;" />
+                <h1>Company Name</h1>
+                <h2>Shipments for Truck: @Model.SelectedTruckNumber</h2>
+            </div>
+            <table class="table table-bordered mt-3 shipment-table">
+                <thead>
+                    <tr>
+                        <th>Sender Name</th>
+                        <th>Receiver Name</th>
+                        <th>City</th>
+                        <th>Booking Office</th>
+                        <th>Shipment Date</th>
+                        <th>Description</th>
+                        <th>Number of Items</th>
+                        <th>Total Weight</th>
+                        <th>Price</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var shipment in Model.Shipments)
+                    {
+                        <tr>
+                            <td>@shipment.SenderName</td>
+                            <td>@shipment.ReceiverName</td>
+                            <td>@shipment.City</td>
+                            <td>@shipment.BookingOffice</td>
+                            <td>@shipment.ShipmentDateTime.ToString("yyyy-MM-dd")</td>
+                            <td>@shipment.Description</td>
+                            <td>@shipment.NumberOfItems</td>
+                            <td>@shipment.TotalWeight kg</td>
+                            <td>₹@shipment.Price</td>
+                        </tr>
+                    }
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="6" class="text-end"><strong>Total:</strong></td>
+                        <td colspan="1">@Model.Shipments.Sum(s => s.NumberOfItems)</td> <!-- Calculate total weight -->
+                        <td colspan="1">@Model.Shipments.Sum(s => s.TotalWeight) kg</td> <!-- Calculate total weight -->
+                        <td colspan="1">@Model.Shipments.Sum(s => s.Price) INR</td> <!-- Calculate total price -->
+                    </tr>
+                </tfoot>
+            </table>
+            <footer class="text-center mt-4">
+                <p><strong>Company Address:</strong> 123 Main Street, City, Country</p>
+                <p><strong>Contact:</strong> +91 234 567 890 | email@example.com</p>
+                <p><strong>Note:</strong> Thank you for choosing our services!</p>
+            </footer>
+        </div>
+
+
+    }
+    else if (Model.Shipments != null)
+    {
+        <p class="text-danger mt-4">No shipments found for the selected truck.</p>
+    }
+</div>
+
