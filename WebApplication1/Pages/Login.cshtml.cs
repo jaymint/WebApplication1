@@ -43,7 +43,7 @@ public class LoginModel : PageModel
         }
 
         // Authenticate user
-        var user = await _context.Users
+        var user = await _context.users
             .FirstOrDefaultAsync(u => u.Username == Username && u.Password == hashedPassword);
 
         if (user == null)

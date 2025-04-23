@@ -12,7 +12,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<Truck> Trucks { get; set; }
     public DbSet<ShipmentTruckAssignment> ShipmentTruckAssignments { get; set; }
 
-    public DbSet<User> Users { get; set; }
+    public DbSet<User> users { get; set; }
 
 
 

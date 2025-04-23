@@ -34,7 +34,7 @@ public class CreateUserModel : PageModel
             User.Password = Convert.ToBase64String(hashedPassword);
         }
 
-        _context.Users.Add(User);
+        _context.users.Add(User);
         await _context.SaveChangesAsync();
 
         return RedirectToPage("/Login");
