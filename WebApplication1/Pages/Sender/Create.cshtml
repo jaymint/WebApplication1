@@ -12,9 +12,41 @@
 </head>
 
 <h1 class="text-center my-4">Create મોકલનાર પાર્ટી ની વિગતવાર</h1>
+<script>
+    function editSender(senderId) {
+          console.log("Shipment ID Selected yes: ", senderId);
+        // Find the sender row in the table using the data-id attribute
+        const rows = document.querySelectorAll("table tbody tr");
+        let selectedRow = null;
+
+        rows.forEach(row => {
+            const builtyNumberCell = row.children[0]; // First cell contains the shipment ID
+            console.log("Shipment ID Selected yes: ", builtyNumberCell);
+            if (builtyNumberCell && builtyNumberCell.textContent.trim() === senderId.toString()) {
+                selectedRow = row;
+            }
+        });
+
+        if (!selectedRow) {
+            console.error("Senders not found.");
+            return;
+        }
+
+        // Populate the form fields with the sender's data
+        document.getElementById('SenderId').value = senderId; // Set the hidden field for the sender ID
+        document.getElementById('Name').value = selectedRow.children[1].textContent;
+        document.getElementById('Email').value = selectedRow.children[2].textContent;
+        document.getElementById('PhoneNumber').value = selectedRow.children[3].textContent;
+		document.getElementById('GSTIN').value = selectedRow.children[4].textContent;   
+
+        // Optionally, scroll to the form
+        document.getElementById('Name').scrollIntoView({ behavior: 'smooth' });
+    }
+</script>
 
 <div class="container bg-light shadow p-4 rounded">
     <form method="post" class="row g-3">
+        <input type="hidden" id="SenderId" name="Sender.Id" />
         <div class="col-md-6">
             <label for="Name" class="form-label text-primary">
                 <i class="fas fa-user"></i> Name
@@ -25,7 +57,7 @@
             <label for="Email" class="form-label text-primary">
                 <i class="fas fa-envelope"></i> Email
             </label>
-            <input type="email" class="form-control" id="Email" name="Sender.Email" required />
+            <input type="email" class="form-control" id="Email" name="Sender.Email"  />
         </div>
         <div class="col-md-6">
             <label for="PhoneNumber" class="form-label text-primary">
@@ -33,6 +65,13 @@
             </label>
             <input type="text" class="form-control" id="PhoneNumber" name="Sender.PhoneNumber" required />
         </div>
+        <div class="col-md-6">
+            <label for="GSTIN" class="form-label text-primary">
+                <i class="fas fa-file-invoice"></i> GSTIN
+            </label>
+            <input type="text" class="form-control" id="GSTIN" name="Sender.GSTIN" />
+        </div>
+
         <!-- Buttons Section 
         <div class="col-12 d-flex justify-content-between">
             <a asp-page="/Index" class="btn btn-secondary">
@@ -57,6 +96,46 @@
             </div>
         </div>
     </form>
+    @if (Model.Senders != null && Model.Senders.Any())
+    {
+        <div class="mt-5">
+            <h3 class="text-center">Existing Senders</h3>
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Phone Number</th>
+						<th>GSTIN</th>
+                        <th>Actions</th> <!-- New column for actions -->
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var sender in Model.Senders)
+                    {
+                        <tr>
+							<td>@sender.Id</td>
+                            <td>@sender.Name</td>
+                            <td>@sender.Email</td>
+                            <td>@sender.PhoneNumber</td>
+							<td>@sender.GSTIN</td>  
+                            <td>
+                                <button class="btn btn-primary btn-sm" onclick="editSender(@sender.Id)">Edit</button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="mt-5 alert alert-warning text-center">
+            No senders found.
+        </div>
+    }
+
 </div>
 
 

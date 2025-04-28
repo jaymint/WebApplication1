@@ -16,8 +16,8 @@ public class CreateShipmentModel : PageModel
     [BindProperty]
     public Shipment Shipment { get; set; }
 
-    public List<string> Senders { get; set; } 
-    public List<string> Receivers { get; set; } 
+    public List<Sender> Senders { get; set; } 
+    public List<DataEntry> Receivers { get; set; } 
     public List<string> Cities { get; set; } 
     public List<string> BookingOffices { get; set; } 
 
@@ -32,41 +32,48 @@ public class CreateShipmentModel : PageModel
         CurrentDateTime = DateTime.Now.ToString("yyyy-MM-ddTHH:mm");
 
         // Populate combo box data (replace with database queries if needed)
-        Senders = await _context.Senders
-        .Select(de => de.Name) // Assuming 'Name' is the field in DataEntry
-        .ToListAsync();
-        Receivers = await _context.dataentries
-        .Select(de => de.Name) // Assuming 'Name' is the field in DataEntry
-        .ToListAsync();
+        Senders = await _context.Senders.ToListAsync();
+        Receivers = await _context.dataentries.ToListAsync();
         Cities = await _context.Cities
            .Select(c => c.Name) // Fetch city names
            .ToListAsync();
-        BookingOffices = new List<string> { "Office 1", "Office 2", "Office 3" };
+        BookingOffices = new List<string> { "Sarkhej", "Aslali", "Kalupur" };
+        // If a shipment exists, populate SenderName and ReceiverName
+        if (Shipment != null && Shipment.Id > 0)
+        {
+            Shipment = await _context.Shipments
+                .Include(s => s.Sender)
+                .Include(s => s.Receiver)
+                .Where(s => s.Id == Shipment.Id)
+                .Select(s => new Shipment
+                {
+                    Id = s.Id,
+                    SenderId = s.SenderId,
+                    ReceiverId = s.ReceiverId,
+                    SenderName = s.Sender.Name, // Retrieve SenderName
+                    ReceiverName = s.Receiver.Name, // Retrieve ReceiverName
+                    City = s.City,
+                    BookingOffice = s.BookingOffice,
+                    ShipmentDateTime = s.ShipmentDateTime,
+                    Description = s.Description,
+                    NumberOfItems = s.NumberOfItems,
+                    TotalWeight = s.TotalWeight,
+                    Price = s.Price,
+                    PaymentStatus = s.PaymentStatus,
+                    CreatedBy = s.CreatedBy
+                })
+                .FirstOrDefaultAsync();
+        }
     }
 
     public async Task<IActionResult> OnPostAsync()
     {
 
-        // Retrieve the username from the session
-        var username = HttpContext.Session.GetString("Username");
-        if (string.IsNullOrEmpty(username))
-        {
-            return RedirectToPage("/Login"); // Redirect to login if the user is not logged in
-        }
-
-        // Set the CreatedBy property
-        Shipment.CreatedBy = username;
         Shipment.ShipmentDateTime = DateTime.Now;
-
+     
         if (!ModelState.IsValid)
         {
-            foreach (var modelState in ModelState.Values)
-            {
-                foreach (var error in modelState.Errors)
-                {
-                    Console.WriteLine($"Validation Error: {error.ErrorMessage}");
-                }
-            }
+         
             return Page();
         }
 
@@ -79,13 +86,34 @@ public class CreateShipmentModel : PageModel
         TempData["SuccessMessage"] = $"Shipment with ID {Shipment.Id} has been successfully created.";
 
         // Fetch the inserted shipment to display it
-        Shipment = await _context.Shipments.FirstOrDefaultAsync(s => s.Id == Shipment.Id);
+        Shipment = await _context.Shipments
+            .Include(s => s.Sender)
+            .Include(s => s.Receiver)
+            .Where(s => s.Id == Shipment.Id)
+            .Select(s => new Shipment
+            {
+                Id = s.Id,
+                SenderId = s.SenderId,
+                ReceiverId = s.ReceiverId,
+                SenderName = s.Sender.Name, // Retrieve SenderName
+                ReceiverName = s.Receiver.Name, // Retrieve ReceiverName
+                City = s.City,
+                BookingOffice = s.BookingOffice,
+                ShipmentDateTime = s.ShipmentDateTime,
+                Description = s.Description,
+                NumberOfItems = s.NumberOfItems,
+                TotalWeight = s.TotalWeight,
+                Price = s.Price,
+                PaymentStatus = s.PaymentStatus,
+                CreatedBy = s.CreatedBy
+            })
+            .FirstOrDefaultAsync();
 
         // Reload dropdown data
-        Senders = await _context.Senders.Select(de => de.Name).ToListAsync();
-        Receivers = await _context.dataentries.Select(de => de.Name).ToListAsync();
+        Senders = await _context.Senders.ToListAsync();
+        Receivers = await _context.dataentries.ToListAsync();
         Cities = await _context.Cities.Select(c => c.Name).ToListAsync();
-        BookingOffices = new List<string> { "Office 1", "Office 2", "Office 3" };
+        BookingOffices = new List<string> { "Sarkhej", "Aslali", "Kalupur" };
 
 
       

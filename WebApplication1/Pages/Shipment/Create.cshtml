@@ -10,49 +10,58 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <style>
-        @@media print {
-            /* Hide everything by default */
-            body *
+       @@media print {
+    /* Hide everything by default */
+    body * {
+        visibility: hidden;
+    }
 
-        {
-            visibility: hidden;
-        }
+    /* Show only the print-section */
+    .print-section, .print-section * {
+        visibility: visible;
+    }
 
-        /* Show only the print-section */
-        .print-section, .print-section * {
-            visibility: visible;
-        }
+    /* Hide the print button */
+    .no-print {
+        display: none !important;
+    }
 
-        /* Hide the print button */
-        .no-print {
-            display: none !important;
-        }
+    /* Ensure the print-section is positioned correctly */
+    .print-section {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        padding: 0; /* Remove extra padding */
+        margin: 0; /* Remove extra margin */
+        font-family: Arial, sans-serif;
+    }
 
-        /* Ensure the print-section is positioned correctly */
-        .print-section {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            padding: 20px;
-            font-family: Arial, sans-serif;
-        }
+    /* Optional: Add borders and spacing for a clean look */
+    .print-section h3 {
+        margin-bottom: 10px;
+        border-bottom: 1px solid #000;
+        padding-bottom: 5px;
+    }
 
-            /* Optional: Add borders and spacing for a clean look */
-            .print-section h3 {
-                margin-bottom: 20px;
-                border-bottom: 2px solid #000;
-                padding-bottom: 10px;
-            }
+    .print-section table {
+        width: 100%;
+        border-collapse: collapse; /* Ensure no extra spacing between table cells */
+    }
 
-            .print-section p {
-                margin: 5px 0;
-            }
-            .print-section button{
-                visibility: hidden;
-            }
+    .print-section th, .print-section td {
+        border: 1px solid #000;
+        padding: 5px; /* Adjust padding for compactness */
+        text-align: left;
+    }
 
-        }
+    /* Ensure the page size fits within a single page */
+    @@page {
+        size: auto; /* Use the default page size */
+        margin: 10mm; /* Adjust margins to fit content */
+    }
+}
+
     </style>
 
 </head>
@@ -60,23 +69,29 @@
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const paidRadio = document.getElementById('Paid');
-        const toBePaidRadio = document.getElementById('ToBePaid');
+        const toBeBilledRadio = document.getElementById('ToBeBilled');
+        const toPayRadio = document.getElementById('ToPay');
         const priceField = document.getElementById('Price');
 
         function togglePriceField() {
             if (paidRadio.checked) {
                 priceField.disabled = false;
                 priceField.required = true; // Make the field required
-            } else {
+            } else if (toBeBilledRadio.checked){
                 priceField.disabled = true;
                 priceField.required = false; // Remove the required attribute
                 priceField.value = ''; // Clear the value
-            }
+          	} else {
+				priceField.disabled = true;
+				priceField.required = false; // Remove the required attribute
+				priceField.value = ''; // Clear the value
+			}
         }
 
         // Attach event listeners to the radio buttons
         paidRadio.addEventListener('change', togglePriceField);
-        toBePaidRadio.addEventListener('change', togglePriceField);
+        toBeBilledRadio.addEventListener('change', togglePriceField);
+		toPayRadio.addEventListener('change', togglePriceField);
 
         // Initialize the state on page load
         togglePriceField();
@@ -96,26 +111,26 @@
     <form method="post" class="row g-3">
         <!-- Existing fields -->
         <div class="col-md-6">
-            <label for="SenderName" class="form-label text-primary">
+            <label for="SenderId" class="form-label text-primary">
                 <i class="fas fa-user"></i> મોકલનાર નું નામ
             </label>
-            <select id="SenderName" name="Shipment.SenderName" class="form-select" required>
+            <select id="SenderId" name="Shipment.SenderId" class="form-select" required>
                 <option value="" disabled selected>Choose Sender</option>
                 @foreach (var sender in Model.Senders)
                 {
-                    <option value="@sender">@sender</option>
+                    <option value="@sender.Id">@sender.Name</option>
                 }
             </select>
         </div>
         <div class="col-md-6">
-            <label for="ReceiverName" class="form-label text-primary">
+            <label for="ReceiverId" class="form-label text-primary">
                 <i class="fas fa-user"></i> લેનાર નું નામ
             </label>
-            <select id="ReceiverName" name="Shipment.ReceiverName" class="form-select" required>
+            <select id="ReceiverId" name="Shipment.ReceiverId" class="form-select" required>
                 <option value="" disabled selected>Choose Receiver</option>
                 @foreach (var receiver in Model.Receivers)
                 {
-                    <option value="@receiver">@receiver</option>
+                    <option value="@receiver.Id">@receiver.Name</option>
                 }
             </select>
         </div>
@@ -170,13 +185,17 @@
                 <label class="form-check-label" for="Paid">Paid</label>
             </div>
             <div class="form-check">
-                <input class="form-check-input" type="radio" id="ToBePaid" name="Shipment.PaymentStatus" value="ToBePaid" required />
-                <label class="form-check-label" for="ToBePaid">To be Paid</label>
+                <input class="form-check-input" type="radio" id="ToBeBilled" name="Shipment.PaymentStatus" value="ToBeBilled" required />
+                <label class="form-check-label" for="ToBeBilled">To be Billed</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" id="ToPay" name="Shipment.PaymentStatus" value="ToPay" required />
+                <label class="form-check-label" for="ToPay">To Pay</label>
             </div>
         </div>
         <div class="col-md-6">
             <label for="Price" class="form-label text-primary">
-                <i class="fas fa-dollar-sign"></i> Price
+                <i class="fas fa-indian-rupee-sign"></i> Amount
             </label>
             <input type="number" step="0.01" class="form-control" id="Price" name="Shipment.Price" disabled />
         </div>
@@ -187,6 +206,8 @@
             </label>
             <textarea class="form-control" id="Description" name="Shipment.Description" rows="3" required></textarea>
         </div>
+        <input type="hidden" id="CreatedBy" name="Shipment.CreatedBy" value="@HttpContext.Session.GetString("Username")" />
+
 
         <!-- Buttons Section -->
         <!--<div class="col-12 d-flex justify-content-between">
@@ -213,29 +234,71 @@
         </div>
 
     </form>
+  
     @if (Model.Shipment != null && Model.Shipment.Id > 0)
     {
-        <div class="mt-4 p-4 border rounded bg-white print-section">
-           
-                <h1>Company Name</h1>
-                <h3>Shipment Details</h3>
-                <!-- Shipment details here -->
-            
-            <p><strong>Builty Number:</strong> @Model.Shipment.Id</p>
-            <p><strong>Sender Name:</strong> @Model.Shipment.SenderName      <strong>Receiver Name:</strong> @Model.Shipment.ReceiverName</p>
-            <p><strong>City:</strong> @Model.Shipment.City</p>
-            <p><strong>Booking Office:</strong> @Model.Shipment.BookingOffice</p>
-            <p><strong>Shipment Date:</strong> @Model.Shipment.ShipmentDateTime.ToString("g")</p>
-            <p><strong>Description:</strong> @Model.Shipment.Description</p>
-            <p><strong>Number of Items:</strong> @Model.Shipment.NumberOfItems</p>
-            <p><strong>Total Weight:</strong> @Model.Shipment.TotalWeight</p>
-            <p><strong>Price:</strong> @Model.Shipment.Price</p>
-            <button class="btn btn-secondary" onclick="printShipmentDetails()">Print</button>
+        <div id="print-section" class="mt-4 p-4 border rounded bg-white print-section">
+            <h3 class="text-center">Shipment Details</h3>
+            <table class="table table-bordered">
+                <tbody>
+                    <tr>
+                        <th>Shipment Date</th>
+                        <td>@Model.Shipment.ShipmentDateTime.ToString("yyyy-MM-dd")</td>
+                        <th>Builty Number</th>
+                        <td>@Model.Shipment.Id</td>
+                    </tr>
+                    <tr>
+                        <th>Sender Name</th>
+                        <td>@Model.Shipment.SenderName</td>
+                                         
+                        <th>Receiver Name</th>
+                        <td>@Model.Shipment.ReceiverName</td>
+                    </tr>
+                    <tr>
+                        <th>City</th>
+                        <td>@Model.Shipment.City</td>
+                        <th>Booking Office</th>
+                        <td>@Model.Shipment.BookingOffice</td>
+                    </tr>
+                    <tr>
+                        <th>Description</th>
+                        <td>@Model.Shipment.Description</td>
+                    </tr>
+                    <tr>
+                        <th>Number of Items</th>
+                        <td>@Model.Shipment.NumberOfItems</td>
+                        <th>Total Weight</th>
+                        <td>@Model.Shipment.TotalWeight</td>
+                    </tr>
+                    <tr>
+                        <th>Amount</th>
+                        <td>@Model.Shipment.Price</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="text-center mt-3">
+                <button type ="button" class="btn btn-secondary no-print" onclick="printShipmentDetails()">Print</button>
+            </div>
         </div>
     }
+
+    
 </div>
 <script>
     function printShipmentDetails() {
+        // Save the current page content
+        const originalContent = document.body.innerHTML;
+        const printSection = document.getElementById('print-section');
+        window.document.body.innerHTML = printSection.outerHTML; // Set the body to the print section content
         window.print();
+         // Restore the original page content
+        document.body.innerHTML = originalContent;
+
+        // Reload the scripts and styles
+        //window.location.reload();
+
+        // Replace the current history state to prevent form resubmission
+    window.history.replaceState(null, null, window.location.href);
+
     }
 </script>

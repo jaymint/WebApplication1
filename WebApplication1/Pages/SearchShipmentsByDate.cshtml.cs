@@ -33,6 +33,8 @@ public class SearchShipmentsByDateModel : PageModel
     public List<ShipmentWithTruck> Shipments { get; set; }
     public List<string> BookingOffices { get; set; } // List of unique booking offices
 
+    public string PaymentStatus { get; set; } // "Paid" or "ToBePaid"
+
     public async Task OnGetAsync()
     {
         // Fetch unique booking offices for the dropdown
@@ -41,7 +43,10 @@ public class SearchShipmentsByDateModel : PageModel
             .Distinct()
             .ToListAsync();
 
+        // Query to fetch shipments with sender and receiver names
         var query = from shipment in _context.Shipments
+                    join sender in _context.Senders on shipment.SenderId equals sender.Id
+                    join receiver in _context.dataentries on shipment.ReceiverId equals receiver.Id
                     join assignment in _context.ShipmentTruckAssignments
                         on shipment.Id equals assignment.ShipmentId into shipmentAssignments
                     from assignment in shipmentAssignments.DefaultIfEmpty()
@@ -51,8 +56,8 @@ public class SearchShipmentsByDateModel : PageModel
                     select new ShipmentWithTruck
                     {
                         Id = shipment.Id,
-                        SenderName = shipment.SenderName,
-                        ReceiverName = shipment.ReceiverName,
+                        SenderName = sender.Name, // Fetch SenderName
+                        ReceiverName = receiver.Name, // Fetch ReceiverName
                         City = shipment.City,
                         BookingOffice = shipment.BookingOffice,
                         ShipmentDateTime = shipment.ShipmentDateTime,
@@ -60,6 +65,7 @@ public class SearchShipmentsByDateModel : PageModel
                         NumberOfItems = shipment.NumberOfItems,
                         TotalWeight = shipment.TotalWeight,
                         Price = shipment.Price,
+                        PaymentStatus = shipment.PaymentStatus,
                         TruckNumber = truck != null ? truck.TruckNumber : "Unassigned"
                     };
 
@@ -107,4 +113,7 @@ public class ShipmentWithTruck
     public double TotalWeight { get; set; }
     public decimal Price { get; set; }
     public string TruckNumber { get; set; } // Truck number or "Unassigned"
+
+    public string PaymentStatus { get; set; } // "Paid" or "ToBePaid"
+
 }

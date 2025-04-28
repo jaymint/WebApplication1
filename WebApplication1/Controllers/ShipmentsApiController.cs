@@ -15,25 +15,32 @@ public class ShipmentsApiController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetShipment(int id)
     {
-        var shipment = await _context.Shipments.FindAsync(id);
+        var shipment = await _context.Shipments
+            .Include(s => s.Sender) // Include the Sender navigation property
+            .Include(s => s.Receiver) // Include the Receiver navigation property
+            .Where(s => s.Id == id)
+            .Select(s => new
+            {
+                s.Id,
+                SenderName = s.Sender.Name, // Fetch SenderName
+                ReceiverName = s.Receiver.Name, // Fetch ReceiverName
+                s.City,
+                s.BookingOffice,
+                s.ShipmentDateTime,
+                s.Description,
+                s.NumberOfItems,
+                s.TotalWeight,
+                s.Price
+            })
+            .FirstOrDefaultAsync();
 
         if (shipment == null)
         {
             return NotFound();
         }
 
-        return Ok(new
-        {
-            shipment.SenderName,
-            shipment.ReceiverName,
-            shipment.City,
-            shipment.BookingOffice,
-            shipment.ShipmentDateTime,
-            shipment.Description,
-            shipment.NumberOfItems,
-            shipment.TotalWeight,
-            shipment.Price
-        });
+        return Ok(shipment);
     }
+
 }
 

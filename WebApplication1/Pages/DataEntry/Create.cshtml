@@ -11,10 +11,40 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 
-<h1 class="text-center my-4">Create Data Entry</h1>
+<h1 class="text-center my-4">Enter details of Receivers</h1>
+<script>
+    function editReceiver(receiverId) {
+         console.log("Shipment ID Selected yes: ", receiverId);
+           // Find the shipment row in the table
+        const rows = document.querySelectorAll("table tbody tr");
+        let selectedRow = null;
+
+        rows.forEach(row => {
+            const builtyNumberCell = row.children[0]; // First cell contains the shipment ID
+            if (builtyNumberCell && builtyNumberCell.textContent.trim() === receiverId.toString()) {
+                selectedRow = row;
+            }
+        });
+
+        if (!selectedRow) {
+            console.error("Receiver not found.");
+            return;
+        }
+
+        document.getElementById('ReceiverId').value = receiverId;
+        document.getElementById('Name').value = selectedRow.children[1].textContent;
+        document.getElementById('Email').value =selectedRow.children[2].textContent;
+        document.getElementById('MobileNumber').value = selectedRow.children[3].textContent;
+        document.getElementById('CityName').value = selectedRow.children[4].textContent;
+
+        // Optionally, scroll to the form
+        document.getElementById('Name').scrollIntoView({ behavior: 'smooth' });
+    }
+</script>
 
 <div class="container bg-light shadow p-4 rounded">
     <form method="post" class="row g-3">
+        <input type="hidden" id="ReceiverId" name="DataEntry.Id" />
         <div class="col-md-6">
             <label for="Name" class="form-label text-primary">
                 <i class="fas fa-user"></i> Name
@@ -25,7 +55,7 @@
             <label for="Email" class="form-label text-primary">
                 <i class="fas fa-envelope"></i> Email
             </label>
-            <input type="email" class="form-control" id="Email" name="DataEntry.Email" required />
+            <input type="email" class="form-control" id="Email" name="DataEntry.Email" />
         </div>
         <div class="col-md-6">
             <label for="MobileNumber" class="form-label text-primary">
@@ -33,7 +63,7 @@
             </label>
             <input type="text" class="form-control" id="MobileNumber" name="DataEntry.MobileNumber" required />
         </div>
- <div class="col-md-6">
+        <div class="col-md-6">
             <label for="CityName" class="form-label text-primary">
                 <i class="fas fa-city"></i> City Name
             </label>
@@ -41,33 +71,63 @@
                 <option value="" disabled selected>Choose City</option>
                 @foreach (var city in Model.Cities)
                 {
-                        <option value="@city">@city</option>
+                    <option value="@city">@city</option>
                 }
             </select>
         </div>
-        <!-- Buttons Section 
-        <div class="col-12 d-flex justify-content-between">
-            <a asp-page="/Index" class="btn btn-secondary">
-                <i class="fas fa-arrow-left"></i> Back to Home
-            </a>
-            <button type="submit" class="btn btn-success">
-                <i class="fas fa-paper-plane"></i> Submit
-            </button>
-        </div>-->
-
         <div class="col-12 text-center">
             <div class="d-flex justify-content-center gap-3">
-                <!-- Assign Button -->
                 <button type="submit" class="btn btn-success btn-lg d-flex align-items-center justify-content-center">
                     <i class="fas fa-paper-plane me-2"></i> Submit
                 </button>
-
-                <!-- Cancel Button -->
                 <a href="/" class="btn btn-secondary btn-lg d-flex align-items-center justify-content-center">
                     <i class="fas fa-arrow-left me-2"></i> Cancel
                 </a>
             </div>
         </div>
     </form>
+
+
+    @if (Model.Receivers != null && Model.Receivers.Any())
+    {
+        <div class="mt-5">
+            <h3 class="text-center">Existing Receivers</h3>
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Mobile Number</th>
+                        <th>City Name</th>
+                        <th>Actions</th>
+                        <!-- New column for actions -->
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var receiver in Model.Receivers)
+                    {
+                        <tr >
+                            <td>@receiver.Id</td>
+                            <td>@receiver.Name</td>
+                            <td>@receiver.Email</td>
+                            <td>@receiver.MobileNumber</td>
+                            <td>@receiver.CityName</td>
+                            <td>
+                                <button class="btn btn-primary btn-sm" onclick="editReceiver(@receiver.Id)">Edit</button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="mt-5 alert alert-warning text-center">
+            No receivers found.
+        </div>
+    }
+
 </div>
 

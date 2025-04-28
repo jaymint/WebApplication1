@@ -29,7 +29,7 @@
                 {
                     foreach (var shipment in Model.Shipments)
                     {
-                        <option value="@shipment.Id">@shipment.SenderName To @shipment.ReceiverName</option>
+                        <option value="@shipment.Id">@shipment.Id - @shipment.SenderName To @shipment.ReceiverName</option>
                     }
                 }
                 else
@@ -62,7 +62,7 @@
             <label for="AssignmentDate" class="form-label text-primary">
                 <i class="fas fa-calendar-alt"></i> Assignment Date
             </label>
-            <input type="date" id="AssignmentDate" name="ShipmentTruckAssignment.AssignmentDate" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")" required />
+            <input type="date" id="AssignmentDate" name="ShipmentTruckAssignment.AssignmentDate" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")" readonly />
         </div>
         <!-- Section to display shipment details -->
         <div class="col-12 mt-4">

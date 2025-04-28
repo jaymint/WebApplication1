@@ -12,69 +12,150 @@
 </head>
 
 <h1 class="text-center my-4">Add Truck Details</h1>
-
+<script>
+	function editTruck(truckId) {
+		console.log("Truck ID Selected: ", truckId);
+		// Find the truck row in the table
+		const rows = document.querySelectorAll("table tbody tr");
+		let selectedRow = null;
+		rows.forEach(row => {
+			const truckNumberCell = row.children[0]; // First cell contains the truck number
+			if (truckNumberCell && truckNumberCell.textContent.trim() === truckId.toString()) {
+				selectedRow = row;
+			}
+		});
+		if (!selectedRow) {
+			console.error("Truck not found.");
+			return;
+		}
+		document.getElementById('TruckId').value = truckId; // Set the hidden field for the truck ID    
+		document.getElementById('TruckNumber').value = selectedRow.children[1].textContent;
+		document.getElementById('Model').value = selectedRow.children[2].textContent;
+		document.getElementById('Capacity').value = selectedRow.children[3].textContent;
+		document.getElementById('DriverName').value = selectedRow.children[4].textContent;
+		document.getElementById('DriverMobileNumber').value = selectedRow.children[5].textContent;
+		document.getElementById('OwnerName').value = selectedRow.children[6].textContent;
+		document.getElementById('OwnerMobileNumber').value = selectedRow.children[7].textContent;
+		// Optionally, scroll to the form
+		document.getElementById('TruckNumber').scrollIntoView({ behavior: 'smooth' });
+	}
+</script>
 <div class="container bg-light shadow p-4 rounded">
     <form method="post" class="row g-3">
-        <div class="col-md-6">
-            <label for="TruckNumber" class="form-label text-primary">
-                <i class="fas fa-truck"></i> Truck Number
-            </label>
-            <input type="text" class="form-control" id="TruckNumber" name="Truck.TruckNumber" required />
+        <!-- Truck Number, Model, and Capacity in a single row -->
+		<input type="hidden" id="TruckId" name="Truck.Id" />    
+        <div class="row">
+            <div class="col-md-4">
+                <label for="TruckNumber" class="form-label text-primary">
+                    <i class="fas fa-truck"></i> Truck Number
+                </label>
+                <input type="text" class="form-control" id="TruckNumber" name="Truck.TruckNumber" required />
+            </div>
+            <div class="col-md-4">
+                <label for="Model" class="form-label text-primary">
+                    <i class="fas fa-cogs"></i> Model
+                </label>
+                <input type="text" class="form-control" id="Model" name="Truck.Model" required />
+            </div>
+            <div class="col-md-4">
+                <label for="Capacity" class="form-label text-primary">
+                    <i class="fas fa-weight-hanging"></i> Capacity (in tons)
+                </label>
+                <input type="number" class="form-control" id="Capacity" name="Truck.Capacity" required />
+            </div>
         </div>
-        <div class="col-md-6">
-            <label for="Model" class="form-label text-primary">
-                <i class="fas fa-cogs"></i> Model
-            </label>
-            <input type="text" class="form-control" id="Model" name="Truck.Model" required />
-        </div>
-        <div class="col-md-6">
-            <label for="Capacity" class="form-label text-primary">
-                <i class="fas fa-weight-hanging"></i> Capacity (in tons)
-            </label>
-            <input type="number" class="form-control" id="Capacity" name="Truck.Capacity" required />
-        </div>
+
+        <!-- Driver Name -->
         <div class="col-md-6">
             <label for="DriverName" class="form-label text-primary">
                 <i class="fas fa-user"></i> Driver Name
             </label>
             <input type="text" class="form-control" id="DriverName" name="Truck.DriverName" required />
         </div>
-        <div class="col-md-6">
-            <label for="OwnerName" class="form-label text-primary">
-                <i class="fas fa-user-tie"></i> Owner Name
-            </label>
-            <input type="text" class="form-control" id="OwnerName" name="Truck.OwnerName" required />
-        </div>
-        <div class="col-md-6">
-            <label for="OwnerMobileNumber" class="form-label text-primary">
-                <i class="fas fa-phone"></i> Owner Mobile Number
-            </label>
-            <input type="text" class="form-control" id="OwnerMobileNumber" name="Truck.OwnerMobileNumber" required />
-        </div>
+
+        <!-- Driver Mobile Number -->
         <div class="col-md-6">
             <label for="DriverMobileNumber" class="form-label text-primary">
                 <i class="fas fa-phone"></i> Driver Mobile Number
             </label>
             <input type="text" class="form-control" id="DriverMobileNumber" name="Truck.DriverMobileNumber" required />
         </div>
-       <!-- <div class="col-12 text-center">
-            <button type="submit" class="btn btn-success btn-lg">
-                <i class="fas fa-paper-plane"></i> Submit
-            </button>
+
+        <!-- Owner Name -->
+        <div class="col-md-6">
+            <label for="OwnerName" class="form-label text-primary">
+                <i class="fas fa-user-tie"></i> Owner Name
+            </label>
+            <input type="text" class="form-control" id="OwnerName" name="Truck.OwnerName" required />
         </div>
-         -->
+
+        <!-- Owner Mobile Number -->
+        <div class="col-md-6">
+            <label for="OwnerMobileNumber" class="form-label text-primary">
+                <i class="fas fa-phone"></i> Owner Mobile Number
+            </label>
+            <input type="text" class="form-control" id="OwnerMobileNumber" name="Truck.OwnerMobileNumber" required />
+        </div>
+
+        <!-- Submit and Cancel Buttons -->
         <div class="col-12 text-center">
             <div class="d-flex justify-content-center gap-3">
-                <!-- Assign Button -->
                 <button type="submit" class="btn btn-success btn-lg d-flex align-items-center justify-content-center">
                     <i class="fas fa-paper-plane me-2"></i> Submit
                 </button>
-
-                <!-- Cancel Button -->
                 <a href="/" class="btn btn-secondary btn-lg d-flex align-items-center justify-content-center">
                     <i class="fas fa-arrow-left me-2"></i> Cancel
                 </a>
             </div>
         </div>
     </form>
+    @if (Model.Trucks != null && Model.Trucks.Any())
+    {
+        <div class="mt-5">
+            <h3 class="text-center">Existing Trucks</h3>
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>Truck Number</th>
+                        <th>Model</th>
+                        <th>Capacity (in tons)</th>
+                        <th>DriverName</th>
+						<th>Driver Mobile Number</th>
+						<th>Owner Name</th>
+						<th>Owner Mobile Number</th>
+						<th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var truck in Model.Trucks)
+                    {
+                        <tr>
+							<td>@truck.Id</td>
+                            <td>@truck.TruckNumber</td>
+                            <td>@truck.Model</td>
+                            <td>@truck.Capacity</td>
+							<td>@truck.DriverName</td>
+							<td>@truck.DriverMobileNumber</td>
+							<td>@truck.OwnerName</td>
+							<td>@truck.OwnerMobileNumber</td> 
+                            <td>
+                                <button class="btn btn-primary btn-sm" onclick="editTruck(@truck.Id)">
+									<i class="fas fade"></i> Edit </button>
+                            </td>
+						</tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="mt-5 alert alert-warning text-center">
+            No trucks found.
+        </div>
+    }
 </div>
+
+        
+     

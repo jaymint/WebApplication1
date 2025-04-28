@@ -30,6 +30,10 @@
             font-family: Arial, sans-serif;
         }
 
+            @@page {
+                size: B4 landscape;
+            }
+
         }
     </style>
 
@@ -68,19 +72,26 @@
         document.getElementById('print-price').textContent = selectedRow.children[9].textContent;
 
         // Show the print section
+         // Save the current page content
+        const originalContent = document.body.innerHTML;
         const printSection = document.getElementById('print-section');
         printSection.classList.remove('d-none');
 
         // Trigger the print dialog
+		window.document.body.innerHTML = printSection.outerHTML; // Set the body to the print section content
         window.print();
+         // Restore the original page content
+        document.body.innerHTML = originalContent;
 
+        // Reload the scripts and styles
+        window.location.reload();
         // Hide the print section after printing
         printSection.classList.add('d-none');
     }
 
 </script>
 
-<h1 class="text-center my-4">Search Shipments</h1>
+<h1 class="text-center my-4">Reports</h1>
 
 <div class="container bg-light shadow p-4 rounded">
     <!-- Back Button -->
@@ -140,6 +151,8 @@
                         <th>Total Weight</th>
                         <th>Price</th>
                         <th>Truck Number</th>
+                        <th>Payment Type</th>
+
                         <th>Actions</th> <!-- New column for actions -->
                     </tr>
                 </thead>
@@ -158,6 +171,7 @@
                             <td>@shipment.TotalWeight</td>
                             <td>@shipment.Price</td>
                             <td>@shipment.TruckNumber</td>
+                            <td>@shipment.PaymentStatus</td>
                             <td>
                                 <button class="btn btn-secondary" onclick="printShipmentDetails(@shipment.Id)">Print</button>
                             </td>
@@ -168,17 +182,48 @@
         </div>
         <div id="print-section" class="print-section d-none">
             <h1 class="text-center">Shipment Details</h1>
-            <p><strong>Builty Number:</strong> <span id="print-builty-number"></span></p>
-            <p><strong>Sender Name:</strong> <span id="print-sender-name"></span></p>
-            <p><strong>Receiver Name:</strong> <span id="print-receiver-name"></span></p>
-            <p><strong>City:</strong> <span id="print-city"></span></p>
-            <p><strong>Booking Office:</strong> <span id="print-booking-office"></span></p>
-            <p><strong>Shipment Date:</strong> <span id="print-shipment-date"></span></p>
-            <p><strong>Description:</strong> <span id="print-description"></span></p>
-            <p><strong>Number of Items:</strong> <span id="print-number-of-items"></span></p>
-            <p><strong>Total Weight:</strong> <span id="print-total-weight"></span></p>
-            <p><strong>Price:</strong> <span id="print-price"></span></p>
+            <table class="table table-bordered">
+                <tbody>
+                    <tr>
+                        <th>Shipment Date</th>
+                        <td><span id="print-shipment-date"></span></td>
+                        <th>Builty Number</th>
+                        <td><span id="print-builty-number"></span></td>
+                    </tr>
+                    <tr>
+                        <th>Sender Name</th>
+                        <td><span id="print-sender-name"></span></td>
+                        <th>Receiver Name</th>
+                        <td><span id="print-receiver-name"></span></td>
+                    </tr>
+                    <tr>
+                        <th>Booking Office</th>
+                        <td><span id="print-booking-office"></span></td>
+                        <th>Destination City</th>
+                        <td><span id="print-city"></span></td>
+                    </tr>
+                    <tr>
+                        <th>Number of Items</th>
+                        <td><span id="print-number-of-items"></span></td>
+                        <th>Total Weight</th>
+                        <td><span id="print-total-weight"></span></td>
+                    </tr>
+                    <tr>
+                        <th>Description</th>
+                        <td><span id="print-description"></span></td>
+                        <th>Price</th>
+                        <td><span id="print-price"></span></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            
+           
+            
+            <p><strong></strong> </p>
         </div>
+
+        
 
 
 

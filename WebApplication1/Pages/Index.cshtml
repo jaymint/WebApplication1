@@ -33,7 +33,12 @@
             </div>
             <div class="col-md-6">
                 <a href="/Sender/Create" class="btn btn-primary btn-lg w-100">
-                    <i class="fas fa-user-plus"></i> મોકલનાર પાર્ટી ની વિગતવાર
+                    <i class="fas fa-user-plus"></i> મોકલનાર પાર્ટી ની ડિટેલ નાખો
+                </a>
+            </div>
+            <div class="col-md-6">
+                <a href="/Truck/Create" class="btn btn-primary btn-lg w-100">
+                    <i class="fas fa-truck"></i> ટ્રક ની ડિટેલ નાખો
                 </a>
             </div>
         </div>
@@ -41,7 +46,7 @@
 
     <!-- Section: Shipments -->
     <div class="mb-4">
-        <h3 class="text-primary">Shipments</h3>
+        <h3 class="text-primary">Consignments and Truck</h3>
         <div class="row g-3">
             <div class="col-md-6">
                 <a href="/Shipment/Create" class="btn btn-primary btn-lg w-100">
@@ -49,37 +54,34 @@
                 </a>
             </div>
             <div class="col-md-6">
-                <a href="/SearchShipmentsByDate" class="btn btn-primary btn-lg w-100">
-                    <i class="fas fa-calendar-alt"></i> Search Shipments by Date
+                <a href="/ShipmentTruckAssignment/Create" class="btn btn-primary btn-lg w-100">
+                    <i class="fas fa-link"></i>
+                    ગાડી ભરો
+                </a>
+            </div>
+            <div class="col-md-6">
+                <a href="/ShipmentsByTruck" class="btn btn-primary btn-lg w-100">
+                    <i class="fas fa-list"></i> મેમો બનાવો
                 </a>
             </div>
         </div>
     </div>
 
-    <!-- Section: Trucks -->
-    <div class="mb-4">
-        <h3 class="text-primary">Trucks</h3>
-        <div class="row g-3">
-            <div class="col-md-6">
-                <a href="/Truck/Create" class="btn btn-primary btn-lg w-100">
-                    <i class="fas fa-truck"></i> Add Truck
-                </a>
-            </div>
-            <div class="col-md-6">
-                <a href="/ShipmentTruckAssignment/Create" class="btn btn-primary btn-lg w-100">
-                    <i class="fas fa-link"></i> Assign Shipment to Truck
-                </a>
-            </div>
-        </div>
-    </div>
+  
 
     <!-- Section: Reports -->
     <div class="mb-4">
         <h3 class="text-primary">Reports</h3>
         <div class="row g-3">
+      
             <div class="col-md-6">
-                <a href="/ShipmentsByTruck" class="btn btn-primary btn-lg w-100">
-                    <i class="fas fa-list"></i> View Shipments by Truck
+                <a href="/SearchShipmentsByDate" class="btn btn-primary btn-lg w-100">
+                    <i class="fas fa-calendar-alt"></i> Shipment Reports
+                </a>
+            </div>
+            <div class="col-md-6">
+                <a href="/SearchTrucksByDateModel" class="btn btn-primary btn-lg w-100">
+                    <i class="fas fa-calendar-alt"></i> Truck Reports
                 </a>
             </div>
         </div>

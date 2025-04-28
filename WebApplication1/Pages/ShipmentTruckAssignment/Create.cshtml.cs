@@ -26,8 +26,23 @@ public class CreateShipmentTruckAssignmentModel : PageModel
             .ToListAsync();
 
         Shipments = await _context.Shipments
-            .Where(s => !assignedShipmentIds.Contains(s.Id))
-            .ToListAsync();
+         .Where(s => !assignedShipmentIds.Contains(s.Id))
+         .Include(s => s.Sender) // Include Sender navigation property
+         .Include(s => s.Receiver) // Include Receiver navigation property
+         .Select(s => new Shipment
+         {
+             Id = s.Id,
+             SenderName = s.Sender.Name, // Fetch SenderName
+             ReceiverName = s.Receiver.Name, // Fetch ReceiverName
+             City = s.City,
+             BookingOffice = s.BookingOffice,
+             ShipmentDateTime = s.ShipmentDateTime,
+             Description = s.Description,
+             NumberOfItems = s.NumberOfItems,
+             TotalWeight = s.TotalWeight,
+             Price = s.Price
+         })
+         .ToListAsync();
 
         // Fetch all trucks for the dropdown
         Trucks = await _context.Trucks.ToListAsync();

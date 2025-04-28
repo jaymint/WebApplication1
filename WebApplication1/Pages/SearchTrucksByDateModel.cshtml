@@ -1,0 +1,124 @@
+﻿@page
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@model SearchTrucksByDateModel
+@{
+    ViewData["Title"] = "Search Trucks by Date";
+}
+
+<head>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+
+<h1 class="text-center my-4 text-primary">Search Trucks by Date</h1>
+
+<div class="container bg-light shadow p-4 rounded">
+    <!-- Form Section -->
+    <form method="get" class="row g-3">
+        <div class="col-md-6">
+            <label for="StartDate" class="form-label text-primary">
+                <i class="fas fa-calendar-alt"></i> Start Date
+            </label>
+            <input type="date" id="StartDate" name="StartDate" class="form-control" value="@Model.StartDate?.ToString("yyyy-MM-dd")" />
+        </div>
+        <div class="col-md-6">
+            <label for="EndDate" class="form-label text-primary">
+                <i class="fas fa-calendar-alt"></i> End Date
+            </label>
+            <input type="date" id="EndDate" name="EndDate" class="form-control" value="@Model.EndDate?.ToString("yyyy-MM-dd")" />
+        </div>
+        <div class="col-12 text-center">
+            <div class="d-flex justify-content-center gap-3">
+                <button type="submit" class="btn btn-primary btn-lg">
+                    <i class="fas fa-search"></i> Search
+                </button>
+                <a href="/" class="btn btn-secondary btn-lg d-flex align-items-center justify-content-center">
+                    <i class="fas fa-arrow-left me-2"></i> Cancel
+                </a>
+            </div>
+        </div>
+    </form>
+
+    <!-- Trucks Table Section -->
+    @if (Model.TruckAssignments != null && Model.TruckAssignments.Any())
+    {
+        <div class="mt-4">
+            <h3 class="text-primary">Trucks Assigned in the Selected Date Range</h3>
+            <table class="table table-bordered table-striped">
+                <thead class="table-primary">
+                    <tr>
+                        <th>Truck Number</th>
+                        <th>Driver Name</th>
+                        <th>Assignment Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var truck in Model.TruckAssignments)
+                    {
+                        <tr>
+                            <td>@truck.TruckNumber</td>
+                            <td>@truck.DriverName</td>
+                            <td>@truck.AssignmentDate.ToString("yyyy-MM-dd")</td>
+                            <td>
+                                <a asp-page="/SearchTrucksByDateModel" asp-route-SelectedTruckId="@truck.TruckId" asp-route-StartDate="@Model.StartDate" asp-route-EndDate="@Model.EndDate" class="btn btn-primary btn-sm">
+                                    View Shipments
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+
+    <!-- Shipments Table Section -->
+    @if (Model.Shipments != null && Model.Shipments.Any())
+    {
+        <div class="mt-4">
+            <h3 class="text-primary">Shipments Assigned to Selected Truck</h3>
+            <table class="table table-bordered table-striped">
+                <thead class="table-primary">
+                    <tr>
+                        <th>Shipment ID</th>
+                        <th>Sender Name</th>
+                        <th>Receiver Name</th>
+                        <th>City</th>
+                        <th>Booking Office</th>
+                        <th>Shipment Date</th>
+                        <th>Description</th>
+                        <th>Number of Items</th>
+                        <th>Total Weight</th>
+                        <th>Price</th>
+                        <th>Payment Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var shipment in Model.Shipments)
+                    {
+                        <tr>
+                            <td>@shipment.ShipmentId</td>
+                            <td>@shipment.SenderName</td>
+                            <td>@shipment.ReceiverName</td>
+                            <td>@shipment.City</td>
+                            <td>@shipment.BookingOffice</td>
+                            <td>@shipment.ShipmentDate.ToString("yyyy-MM-dd")</td>
+                            <td>@shipment.Description</td>
+                            <td>@shipment.NumberOfItems</td>
+                            <td>@shipment.TotalWeight</td>
+                            <td>@shipment.Price</td>
+                            <td>@shipment.PaymentStatus</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else if (Model.Shipments != null)
+    {
+        <div class="mt-4 alert alert-warning">
+            No shipments found for the selected truck.
+        </div>
+    }
+</div>
+

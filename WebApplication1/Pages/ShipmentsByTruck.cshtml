@@ -148,46 +148,64 @@
                 }
             </select>
         </div>
-        <div class="col-md-6 d-flex align-items-end">
-            <button type="submit" class="btn btn-primary">View Shipments</button>
+        <!--
+            <div class="col-md-6">
+            <label for="AssignmentDate" class="form-label text-primary">
+                <i class="fas fa-calendar-alt"></i> Assignment Date
+            </label>
+            <input type="date" id="AssignmentDate" name="AssignmentDate" class="form-control" value="@(Model.AssignmentDate?.ToString("yyyy-MM-dd"))" />
         </div>
+            -->
+            <div class="col-md-12 text-center">
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-search"></i> Search
+            </button>
+
+        </div>
+      
     </form>
 
     @if (Model.Shipments != null && Model.Shipments.Any())
     {
         <div class="d-flex justify-content-between align-items-center mt-4">
-            <h3>Shipments for Truck: @Model.SelectedTruckNumber</h3>
+            
             <button class="btn btn-secondary" onclick="printTable()">Print</button>
         </div>
         <div class="print-section mt-4">
             <div class="text-center mb-4">
-                <img src="/images/logo.png" alt="Company Logo" style="max-width: 150px; margin-bottom: 10px;" />
+                <!--<img src="/images/logo.png" alt="Company Logo" style="max-width: 150px; margin-bottom: 10px;" />
                 <h1>Company Name</h1>
-                <h2>Shipments for Truck: @Model.SelectedTruckNumber</h2>
+                -->
+                <h2>Memo for Truck: @Model.SelectedTruckNumber on: @DateTime.Now.ToString("dd-mm-yyyy")</h2>
             </div>
             <table class="table table-bordered mt-3 shipment-table">
                 <thead>
                     <tr>
+                        <th>Builty Number</th>
                         <th>Sender Name</th>
                         <th>Receiver Name</th>
                         <th>City</th>
                         <th>Booking Office</th>
-                        <th>Shipment Date</th>
+                        <!-- <th>Shipment Date</th> -->
+                    
                         <th>Description</th>
                         <th>Number of Items</th>
                         <th>Total Weight</th>
-                        <th>Price</th>
+                        <th>Amout</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach (var shipment in Model.Shipments)
                     {
                         <tr>
+                            <td>@shipment.Id</td>
                             <td>@shipment.SenderName</td>
                             <td>@shipment.ReceiverName</td>
                             <td>@shipment.City</td>
                             <td>@shipment.BookingOffice</td>
-                            <td>@shipment.ShipmentDateTime.ToString("yyyy-MM-dd")</td>
+                            <!-- <td>@shipment.ShipmentDateTime.ToString("yyyy-MM-dd")</td> -->
+                          
+
                             <td>@shipment.Description</td>
                             <td>@shipment.NumberOfItems</td>
                             <td>@shipment.TotalWeight kg</td>
@@ -204,11 +222,12 @@
                     </tr>
                 </tfoot>
             </table>
-            <footer class="text-center mt-4">
+            <!--<footer class="text-center mt-4">
                 <p><strong>Company Address:</strong> 123 Main Street, City, Country</p>
                 <p><strong>Contact:</strong> +91 234 567 890 | email@example.com</p>
                 <p><strong>Note:</strong> Thank you for choosing our services!</p>
             </footer>
+            -->
         </div>
 
 
