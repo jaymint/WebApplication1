@@ -14,6 +14,7 @@ public class ApplicationDbContext : DbContext
 
     public DbSet<User> users { get; set; }
 
-
+    public DbSet<Expense> Expenses { get; set; } // Add this line
+   
 
 }

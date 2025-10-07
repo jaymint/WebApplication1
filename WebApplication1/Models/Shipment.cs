@@ -40,4 +40,8 @@ public class Shipment
     [NotMapped]
     [ValidateNever]
     public string ReceiverName { get; set; }
+
+
+    public bool ReceivePayment { get; set; }
+
 }

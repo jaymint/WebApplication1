@@ -82,7 +82,7 @@ public class CreateShipmentTruckAssignmentModel : PageModel
         _context.ShipmentTruckAssignments.Add(ShipmentTruckAssignment);
         await _context.SaveChangesAsync();
 
-        return RedirectToPage("/Index");
+        return RedirectToPage();
     }
 
 }

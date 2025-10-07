@@ -1,0 +1,30 @@
+﻿@page "{id:int}"
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@model RemoveExpenseModel
+@{
+    ViewData["Title"] = "Remove Expense";
+}
+
+<h1 class="text-center my-4 text-danger">Remove Expense</h1>
+
+<div class="container bg-light shadow p-4 rounded">
+    <h4>Are you sure you want to delete this expense?</h4>
+    <div class="mb-3">
+        <strong>Category:</strong> @Model.Expense.Description
+    </div>
+    <div class="mb-3">
+        <strong>Amount:</strong> $@Model.Expense.Amount
+    </div>
+    <div class="mb-3">
+        <strong>Date:</strong> @Model.Expense.Date.ToString("yyyy-MM-dd")
+    </div>
+
+    <form method="post">
+        <button type="submit" class="btn btn-danger">
+            <i class="fas fa-trash"></i> Confirm Delete
+        </button>
+        <a asp-page="/Index" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Cancel
+        </a>
+    </form>
+</div>

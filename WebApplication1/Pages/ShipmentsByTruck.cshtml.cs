@@ -25,8 +25,13 @@ public class ShipmentsByTruckModel : PageModel
 
     public async Task OnGetAsync()
     {
-        // Fetch all trucks for the dropdown
-        Trucks = await _context.Trucks.ToListAsync();
+        // Fetch trucks that have shipments assigned for today
+        Trucks = await _context.ShipmentTruckAssignments
+            .Where(sta => sta.AssignmentDate.Date == DateTime.Today) // Filter by today's date
+            .Select(sta => sta.Truck) // Select the associated truck
+            .Distinct() // Ensure unique trucks
+            .ToListAsync();
+
 
         if (TruckId.HasValue)
         {
@@ -38,6 +43,7 @@ public class ShipmentsByTruckModel : PageModel
                 .Include(sta => sta.Shipment) // Include the Shipment navigation property
                 .ThenInclude(s => s.Sender) // Include Sender navigation property   
                 .Include(sta => sta.Shipment.Receiver); // Include Receiver navigation property  
+
            // Fetch shipments with sender and receiver names
             Shipments = await query
             .Select(sta => new Shipment

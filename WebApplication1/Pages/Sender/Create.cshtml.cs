@@ -15,22 +15,35 @@ public class CreateSenderModel : PageModel
     public Sender Sender { get; set; }
     public List<Sender> Senders { get; set; } = new List<Sender>();
 
+        // Pagination properties
+    [BindProperty(SupportsGet = true)]
+    public int PageNumber { get; set; } = 1;
+    public int PageSize { get; set; } = 10;
+    public int TotalPages { get; set; }
+    public int TotalSenders { get; set; }
 
     public async Task OnGetAsync()
     {
         // Fetch all senders from the database
-       
-       
-        Senders = await _context.Senders
+
+
+        IQueryable<Sender> query = _context.Senders
             .Select(d => new Sender
             {
                 Id = d.Id,
                 Name = d.Name,
+                Address = d.Address,
                 Email = d.Email,
                 PhoneNumber = d.PhoneNumber,
-                GSTIN = d.GSTIN
+                GSTIN = d.GSTIN,
+                IsGstinVerified = d.IsGstinVerified
 
-            })
+            });
+            TotalPages = (int)Math.Ceiling(await query.CountAsync() / (double)PageSize);
+
+        Senders = await query
+            .Skip((PageNumber - 1) * PageSize)
+            .Take(PageSize)
             .ToListAsync();
     }
     public async Task<IActionResult> OnPostAsync()
@@ -48,9 +61,11 @@ public class CreateSenderModel : PageModel
             {
                 existingSender.Name = Sender.Name;
                 existingSender.Email = Sender.Email;
+                existingSender.Address = Sender.Address; // Update Address field    
                 existingSender.PhoneNumber = Sender.PhoneNumber;
                 // Update other properties as needed
                 existingSender.GSTIN = Sender.GSTIN; // Update GSTIN field  
+                existingSender.IsGstinVerified = Sender.IsGstinVerified; // Update IsGstinVerified field    
 
                 _context.Senders.Update(existingSender);
                 await _context.SaveChangesAsync();
@@ -62,7 +77,7 @@ public class CreateSenderModel : PageModel
             _context.Senders.Add(Sender);
             await _context.SaveChangesAsync();
         }
-
+        TempData["SuccessMessage"] = "Sender details have been successfully saved.";
         return RedirectToPage("/Sender/Create");
     }
 

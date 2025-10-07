@@ -18,6 +18,10 @@ builder.Services.AddSession(options =>
     options.IdleTimeout = TimeSpan.FromMinutes(30); // Set session timeout to 30 minutes
 });
 
+builder.Services.AddTransient<EmailService>();
+builder.Services.AddTransient<SmsService>();
+
+
 
 
 var app = builder.Build();

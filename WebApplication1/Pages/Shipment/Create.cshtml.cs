@@ -26,18 +26,25 @@ public class CreateShipmentModel : PageModel
 
     public string CreatedBy { get; set; }
     public string PaymentStatus { get; set; }
+
+    public string SelectedCity { get; set; }
     public async Task OnGetAsync()
     {
         // Set the current date and time in the required format
         CurrentDateTime = DateTime.Now.ToString("yyyy-MM-ddTHH:mm");
-
+        Cities = await _context.Cities
+       .Select(c => c.Name) // Fetch city names
+       .ToListAsync();
+       
         // Populate combo box data (replace with database queries if needed)
         Senders = await _context.Senders.ToListAsync();
-        Receivers = await _context.dataentries.ToListAsync();
-        Cities = await _context.Cities
-           .Select(c => c.Name) // Fetch city names
-           .ToListAsync();
+        //Receivers = await _context.dataentries.ToListAsync();
         BookingOffices = new List<string> { "Sarkhej", "Aslali", "Kalupur" };
+        Receivers = await _context.dataentries.ToListAsync();
+       
+
+
+      
         // If a shipment exists, populate SenderName and ReceiverName
         if (Shipment != null && Shipment.Id > 0)
         {
@@ -70,7 +77,17 @@ public class CreateShipmentModel : PageModel
     {
 
         Shipment.ShipmentDateTime = DateTime.Now;
-     
+
+        // Set ReceivePayment based on PaymentStatus
+        if (Shipment.PaymentStatus == "Paid")
+        {
+            Shipment.ReceivePayment = true;
+        }
+        else
+        {
+            Shipment.ReceivePayment = false;
+        }
+
         if (!ModelState.IsValid)
         {
          
@@ -83,7 +100,7 @@ public class CreateShipmentModel : PageModel
         await _context.SaveChangesAsync();
 
         // Set a confirmation message in TempData
-        TempData["SuccessMessage"] = $"Shipment with ID {Shipment.Id} has been successfully created.";
+        TempData["SuccessMessage"] = $"Builty with ID {Shipment.Id} has been successfully created.";
 
         // Fetch the inserted shipment to display it
         Shipment = await _context.Shipments
@@ -120,6 +137,15 @@ public class CreateShipmentModel : PageModel
 
         return Page(); // Stay on the same page
         //return RedirectToPage("/Index");
+    }
+    public async Task<JsonResult> OnGetReceiversByCityAsync(string city)
+    {
+        var receivers = await _context.dataentries
+            .Where(r => r.CityName == city)
+            .Select(r => new { r.Id, r.Name })
+            .ToListAsync();
+
+        return new JsonResult(receivers);
     }
 
 }

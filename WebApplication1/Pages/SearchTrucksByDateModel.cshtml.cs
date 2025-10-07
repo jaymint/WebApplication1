@@ -24,27 +24,27 @@ public class SearchTrucksByDateModel : PageModel
     [BindProperty(SupportsGet = true)]
     public int? SelectedTruckId { get; set; } // Selected truck ID
 
+    [BindProperty(SupportsGet = true)]
+    public DateTime? SelectedAssignedDate { get; set; } // Selected assignment date
+
+
     public List<TruckAssignmentInfo> TruckAssignments { get; set; }
     public List<ShipmentDetails> Shipments { get; set; } // Shipments assigned to the selected truck
 
     public async Task OnGetAsync()
     {
-        // Ensure StartDate and EndDate are set
-        if (!StartDate.HasValue)
-        {
-            StartDate = DateTime.Today;
-        }
 
-        if (!EndDate.HasValue)
-        {
-            EndDate = DateTime.Today;
-        }
+        
 
+        // Retain StartDate and EndDate if provided, otherwise default to today's date
+        StartDate ??= DateTime.Today;
+        EndDate ??= DateTime.Today;
+        Console.WriteLine($"StartDate: {StartDate}, EndDate: {EndDate}");
         // Query to fetch unique trucks and their assignment dates
         TruckAssignments = await _context.ShipmentTruckAssignments
             .Include(sta => sta.Truck)
             .Where(sta => sta.AssignmentDate.Date >= StartDate.Value.Date && sta.AssignmentDate.Date <= EndDate.Value.Date)
-            .GroupBy(sta => new { sta.Truck.Id, sta.Truck.TruckNumber, sta.Truck.DriverName }) // Group by Truck ID, TruckNumber, and DriverName
+            .GroupBy(sta => new { sta.Truck.Id, sta.Truck.TruckNumber, sta.Truck.DriverName,sta.AssignmentDate.Date }) // Group by Truck ID, TruckNumber, and DriverName
             .Select(group => new TruckAssignmentInfo
             {
                 TruckId = group.Key.Id,
@@ -61,7 +61,7 @@ public class SearchTrucksByDateModel : PageModel
                 .Include(sta => sta.Shipment)
                 .ThenInclude(s => s.Sender)
                 .Include(sta => sta.Shipment.Receiver)
-                .Where(sta => sta.TruckId == SelectedTruckId.Value)
+                .Where(sta => sta.TruckId == SelectedTruckId.Value && sta.AssignmentDate.Date == SelectedAssignedDate.Value.Date)
                 .Select(sta => new ShipmentDetails
                 {
                     ShipmentId = sta.Shipment.Id,
@@ -79,7 +79,9 @@ public class SearchTrucksByDateModel : PageModel
                 .ToListAsync();
         }
     }
+
 }
+
 
 public class TruckAssignmentInfo
 {

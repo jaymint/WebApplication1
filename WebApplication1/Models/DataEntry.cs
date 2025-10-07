@@ -30,8 +30,14 @@ public class DataEntry
     public int Id { get; set; }
     public string Name { get; set; }
     [EmailAddress(ErrorMessage = "Invalid email address.")]
+
+    public string? Address { get; set; } // New field for Address   
     public string? Email { get; set; }
     public string MobileNumber { get; set; } // New field
     public string CityName { get; set; }    // New field
+
+    public string? GSTIN { get; set; } // New field for GSTIN   
+    public bool IsGstinVerified { get; set; } // New property to store the checkbox value
 }
+
 

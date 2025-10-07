@@ -10,9 +10,12 @@ public class Sender
     public int Id { get; set; }
     public string Name { get; set; }
 
+    public string? Address { get; set; }
+
     [EmailAddress(ErrorMessage = "Invalid email address.")]
     public string? Email { get; set; }
     public string PhoneNumber { get; set; }
 
     public string? GSTIN { get; set; } // New field for GSTIN
+    public bool IsGstinVerified { get; set; } // New property to store the checkbox value
 }

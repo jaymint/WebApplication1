@@ -5,8 +5,10 @@
     ViewData["Title"] = "Shipments by Truck";
 }
 
-<head>
+
+ <head>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <style>
     @@page {
@@ -127,19 +129,14 @@
 </script>
 
 
-<h1 class="text-center my-4">View Shipments by Truck</h1>
+<h1 class="text-center my-4">Create Memo for Truck : @DateTime.Now.ToString("dd-mm-yyyy")</h1>
 
 <div class="container bg-light shadow p-4 rounded">
-    <!-- Back Button -->
-    <div class="mb-3">
-        <a asp-page="/Index" class="btn btn-secondary">
-            <i class="fas fa-arrow-left"></i> Back to Home
-        </a>
-    </div>
+   
 
     <form method="get" class="row g-3">
         <div class="col-md-6">
-            <label for="TruckId" class="form-label">Select Truck</label>
+            <label for="TruckId" class="form-label">Select Truck to Create Memo</label>
             <select id="TruckId" name="TruckId" class="form-select" required>
                 <option value="" disabled selected>Choose Truck</option>
                 @foreach (var truck in Model.Trucks)
@@ -156,11 +153,16 @@
             <input type="date" id="AssignmentDate" name="AssignmentDate" class="form-control" value="@(Model.AssignmentDate?.ToString("yyyy-MM-dd"))" />
         </div>
             -->
-            <div class="col-md-12 text-center">
+        <div class="col-md-12 d-flex justify-content-center gap-3">
+            <!-- Search Button -->
             <button type="submit" class="btn btn-primary">
                 <i class="fas fa-search"></i> Search
             </button>
 
+            <!-- Cancel Button -->
+            <a href="/" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Back to Home
+            </a>
         </div>
       
     </form>
@@ -168,8 +170,8 @@
     @if (Model.Shipments != null && Model.Shipments.Any())
     {
         <div class="d-flex justify-content-between align-items-center mt-4">
-            
-            <button class="btn btn-secondary" onclick="printTable()">Print</button>
+
+            <button class="btn btn-secondary" onclick="printTable()"><i class="fas fa-print"></i> Print</button>
         </div>
         <div class="print-section mt-4">
             <div class="text-center mb-4">
@@ -181,11 +183,12 @@
             <table class="table table-bordered mt-3 shipment-table">
                 <thead>
                     <tr>
-                        <th>Builty Number</th>
+                        <th>Number</th>
                         <th>Sender Name</th>
+                        <th>Booking Office</th>
                         <th>Receiver Name</th>
                         <th>City</th>
-                        <th>Booking Office</th>
+                        
                         <!-- <th>Shipment Date</th> -->
                     
                         <th>Description</th>
@@ -200,9 +203,10 @@
                         <tr>
                             <td>@shipment.Id</td>
                             <td>@shipment.SenderName</td>
+                            <td>@shipment.BookingOffice</td>
                             <td>@shipment.ReceiverName</td>
                             <td>@shipment.City</td>
-                            <td>@shipment.BookingOffice</td>
+                            
                             <!-- <td>@shipment.ShipmentDateTime.ToString("yyyy-MM-dd")</td> -->
                           
 

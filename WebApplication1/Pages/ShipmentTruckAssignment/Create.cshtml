@@ -15,16 +15,16 @@
 </head>
 
 
-<h1 class="text-center my-4">Assign Shipment to Truck</h1>
+<h1 class="text-center my-4">Load Truck</h1>
 
 <div class="container bg-light shadow p-4 rounded">
     <form method="post" class="row g-3">
         <div class="col-md-6">
             <label for="ShipmentId" class="form-label text-primary">
-                <i class="fas fa-box"></i> Select Shipment
+                <i class="fas fa-box"></i> Select Builty
             </label>
             <select id="ShipmentId" name="ShipmentTruckAssignment.ShipmentId" class="form-select" required onchange="fetchShipmentDetails()">
-                <option value="" disabled selected>Choose Shipment</option>
+                <option value="" disabled selected>Choose Builty</option>
                 @if (Model.Shipments != null && Model.Shipments.Any())
                 {
                     foreach (var shipment in Model.Shipments)
@@ -60,15 +60,15 @@
         <!-- New Assignment Date Field -->
         <div class="col-md-6">
             <label for="AssignmentDate" class="form-label text-primary">
-                <i class="fas fa-calendar-alt"></i> Assignment Date
+                <i class="fas fa-calendar-alt"></i> Truck Loading Date
             </label>
             <input type="date" id="AssignmentDate" name="ShipmentTruckAssignment.AssignmentDate" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")" readonly />
         </div>
         <!-- Section to display shipment details -->
         <div class="col-12 mt-4">
-            <h5 class="text-primary">Shipment Details</h5>
+            <h5 class="text-primary">Builty Details</h5>
             <div id="ShipmentDetails" class="p-3 bg-white border rounded">
-                <p>Select a shipment to view details.</p>
+                <p>Select a Builty to view details.</p>
             </div>
         </div>
 
@@ -76,12 +76,12 @@
             <div class="d-flex justify-content-center gap-3">
                 <!-- Assign Button -->
                 <button type="submit" class="btn btn-success btn-lg d-flex align-items-center justify-content-center">
-                    <i class="fas fa-paper-plane me-2"></i> Assign
+                    <i class="fas fa-paper-plane me-2"></i> Load
                 </button>
 
                 <!-- Cancel Button -->
                 <a href="/" class="btn btn-secondary btn-lg d-flex align-items-center justify-content-center">
-                    <i class="fas fa-arrow-left me-2"></i> Cancel
+                    <i class="fas fa-arrow-left me-2"></i> Back to Home
                 </a>
             </div>
         </div>
@@ -101,17 +101,47 @@
                 success: function (data) {
                     // Populate the ShipmentDetails section with the fetched data
                     const details = `
-                        <p><strong>Sender Name:</strong> ${data.senderName}</p>
-                        <p><strong>Receiver Name:</strong> ${data.receiverName}</p>
-                        <p><strong>City:</strong> ${data.city}</p>
-                        <p><strong>Booking Office:</strong> ${data.bookingOffice}</p>
-                        <p><strong>Shipment Date and Time:</strong> ${data.shipmentDateTime}</p>
-                        <p><strong>Description:</strong> ${data.description}</p>
-                        <p><strong>Number of Items:</strong> ${data.numberOfItems}</p>
-                        <p><strong>Total Weight:</strong> ${data.totalWeight} kg</p>
-                        <p><strong>Price:</strong> ₹${data.price}</p>
-                        <p><strong>User:</strong> ${data.CreatedBy}</p>
-                    `;
+                     <table class="table table-bordered">
+                        <tbody>
+                            <tr>
+                                <th>Builty Number</th>
+                                <td>${shipmentId}</td>
+                                <th>Date</th>
+                                <td>${data.shipmentDateTime ? data.shipmentDateTime.substring(0, 10) : ''}</td>
+
+                            </tr>
+                            <tr>
+                                <th>Sender Name</th>
+                                <td>${data.senderName}</td>
+                                <th>Receiver Name</th>
+                                <td>${data.receiverName}</td>
+
+                            </tr>
+                            <tr>
+                                <th>From Office</th>
+                                <td>${data.bookingOffice}</td>
+                                <th>To City</th>
+                                <td>${data.city}</td>
+                            </tr>
+                            <tr>
+                                <th>Description</th>
+                                <td>${data.description}</td>
+                            </tr>
+                            <tr>
+                                <th>Number of Items</th>
+                                <td>${data.numberOfItems}</td>
+                                <th>Total Weight</th>
+                                <td>${data.totalWeight} kg</td>
+                            </tr>
+                            <tr>
+                                <th>Amount</th>
+                                <td>₹${data.price}</td>
+                                <th>Payment Type</th>
+                                <td>${data.paymentStatus}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                `;
                     document.getElementById("ShipmentDetails").innerHTML = details;
                 },
                 error: function () {

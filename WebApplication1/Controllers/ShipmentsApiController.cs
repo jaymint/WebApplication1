@@ -30,7 +30,8 @@ public class ShipmentsApiController : ControllerBase
                 s.Description,
                 s.NumberOfItems,
                 s.TotalWeight,
-                s.Price
+                s.Price,
+                s.PaymentStatus
             })
             .FirstOrDefaultAsync();
 

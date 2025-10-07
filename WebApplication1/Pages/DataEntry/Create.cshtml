@@ -33,9 +33,19 @@
 
         document.getElementById('ReceiverId').value = receiverId;
         document.getElementById('Name').value = selectedRow.children[1].textContent;
-        document.getElementById('Email').value =selectedRow.children[2].textContent;
-        document.getElementById('MobileNumber').value = selectedRow.children[3].textContent;
-        document.getElementById('CityName').value = selectedRow.children[4].textContent;
+        document.getElementById('Address').value = selectedRow.children[2].textContent;
+
+        document.getElementById('Email').value =selectedRow.children[3].textContent;
+        document.getElementById('MobileNumber').value = selectedRow.children[4].textContent;
+        document.getElementById('CityName').value = selectedRow.children[5].textContent;
+        document.getElementById('GSTIN').value = selectedRow.children[6].textContent;
+
+        // Set the radio button state based on the "Verified GSTIN" column
+        const isGstinVerifiedText = selectedRow.children[7].textContent.trim();
+        document.getElementById('IsGstinVerifiedYes').checked = isGstinVerifiedText === "Yes";
+        document.getElementById('IsGstinVerifiedNo').checked = isGstinVerifiedText === "No";
+
+
 
         // Optionally, scroll to the form
         document.getElementById('Name').scrollIntoView({ behavior: 'smooth' });
@@ -64,6 +74,13 @@
             <input type="text" class="form-control" id="MobileNumber" name="DataEntry.MobileNumber" required />
         </div>
         <div class="col-md-6">
+            <label for="Address" class="form-label text-primary">
+                <i class="fas fa-map-marker-alt"></i> Address
+            </label>
+            <input type="text" class="form-control" id="Address" name="DataEntry.Address" required />
+        </div>
+
+        <div class="col-md-6">
             <label for="CityName" class="form-label text-primary">
                 <i class="fas fa-city"></i> City Name
             </label>
@@ -75,13 +92,34 @@
                 }
             </select>
         </div>
+        <div class="col-md-6">
+            <label for="GSTIN" class="form-label text-primary">
+                <i class="fas fa-file-invoice"></i> GSTIN
+            </label>
+            <input type="text" class="form-control" id="GSTIN" name="DataEntry.GSTIN" />
+            <div class="col-md-6">
+                <label class="form-label text-primary">
+                    <i class="fas fa-check-circle"></i> GSTIN Verified?
+                </label>
+                <div class="d-flex align-items-center">
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" id="IsGstinVerifiedYes" name="DataEntry.IsGstinVerified" value="true" required />
+                        <label class="form-check-label" for="IsGstinVerifiedYes">Yes</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" id="IsGstinVerifiedNo" name="DataEntry.IsGstinVerified" value="false" required />
+                        <label class="form-check-label" for="IsGstinVerifiedNo">No</label>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="col-12 text-center">
             <div class="d-flex justify-content-center gap-3">
                 <button type="submit" class="btn btn-success btn-lg d-flex align-items-center justify-content-center">
                     <i class="fas fa-paper-plane me-2"></i> Submit
                 </button>
                 <a href="/" class="btn btn-secondary btn-lg d-flex align-items-center justify-content-center">
-                    <i class="fas fa-arrow-left me-2"></i> Cancel
+                    <i class="fas fa-arrow-left me-2"></i> Back to Home
                 </a>
             </div>
         </div>
@@ -97,9 +135,12 @@
                     <tr>
                         <th>Id</th>
                         <th>Name</th>
+                        <th>Address</th>
                         <th>Email</th>
-                        <th>Mobile Number</th>
-                        <th>City Name</th>
+                        <th>Contact Number</th>
+                        <th>City</th>
+						<th>GSTIN</th>
+						<th>Verified GSTIN</th>
                         <th>Actions</th>
                         <!-- New column for actions -->
                     </tr>
@@ -107,19 +148,42 @@
                 <tbody>
                     @foreach (var receiver in Model.Receivers)
                     {
-                        <tr >
+                        <tr>
                             <td>@receiver.Id</td>
                             <td>@receiver.Name</td>
+                            <td>@receiver.Address</td>
                             <td>@receiver.Email</td>
                             <td>@receiver.MobileNumber</td>
                             <td>@receiver.CityName</td>
-                            <td>
+							<td>@receiver.GSTIN</td>
+                            <td>@(receiver.IsGstinVerified ? "Yes" : "No")</td> <!-- Display Yes/No -->
+							<td>    
                                 <button class="btn btn-primary btn-sm" onclick="editReceiver(@receiver.Id)">Edit</button>
                             </td>
                         </tr>
                     }
                 </tbody>
             </table>
+            @if (Model.TotalPages > 1)
+            {
+                <nav>
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item @(Model.PageNumber == 1 ? "disabled" : "")">
+                            <a class="page-link" asp-page="./Create" asp-route-PageNumber="@(Model.PageNumber - 1)">Previous</a>
+                        </li>
+                        @for (int i = 1; i <= Model.TotalPages; i++)
+                        {
+                            <li class="page-item @(i == Model.PageNumber ? "active" : "")">
+                                <a class="page-link" asp-page="./Create" asp-route-PageNumber="@i">@i</a>
+                            </li>
+                        }
+                        <li class="page-item @(Model.PageNumber == Model.TotalPages ? "disabled" : "")">
+                            <a class="page-link" asp-page="./Create" asp-route-PageNumber="@(Model.PageNumber + 1)">Next</a>
+                        </li>
+                    </ul>
+                </nav>
+            }
+
         </div>
     }
     else
